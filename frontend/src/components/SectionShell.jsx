@@ -11,8 +11,8 @@ export function SectionShell({ title, kicker, children }) {
       className="mx-auto w-full max-w-6xl"
     >
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-blush">{kicker}</p>
-        <h2 className="mt-2 text-3xl font-black text-ink">{title}</h2>
+        <p className="text-sm font-bold uppercase tracking-[0.18em] text-blush dark:text-[#f3a6c4]">{kicker}</p>
+        <h2 className="mt-2 text-3xl font-black text-ink dark:text-white">{title}</h2>
       </div>
       {children}
     </motion.section>

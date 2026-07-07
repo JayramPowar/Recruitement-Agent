@@ -7,9 +7,9 @@ import { useAppState } from "../context/AppState.jsx";
 
 function Metric({ label, value }) {
   return (
-    <div className="rounded-lg border border-azure/20 bg-white p-4 shadow-sm">
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
-      <p className="mt-2 text-3xl font-black text-ink">{value}</p>
+    <div className="rounded-lg border border-azure/20 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#151c2b]">
+      <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-2 text-3xl font-black text-ink dark:text-white">{value}</p>
     </div>
   );
 }
@@ -35,10 +35,10 @@ export function DashboardView() {
 
   return (
     <SectionShell title="ATS Dashboard" kicker="Match analysis">
-      <div className="mb-5 flex items-center justify-between rounded-lg bg-white p-5 shadow-sm">
+      <div className="mb-5 flex items-center justify-between rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
         <div>
-          <p className="text-sm font-semibold text-slate-500">Full ATS Analysis</p>
-          <p className="mt-1 text-slate-700">Scores keywords, semantic match, experience, education, and format.</p>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Full ATS Analysis</p>
+          <p className="mt-1 text-slate-700 dark:text-slate-200">Scores keywords, semantic match, experience, education, and format.</p>
         </div>
         <Button onClick={runATS} disabled={loading}>
           {loading ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
@@ -59,29 +59,29 @@ export function DashboardView() {
           </div>
 
           <div className="grid gap-5 lg:grid-cols-2">
-            <div className="rounded-lg bg-white p-5 shadow-sm">
-              <h3 className="font-black">Matched Skills</h3>
+            <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
+              <h3 className="font-black dark:text-white">Matched Skills</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {ats.matched_skills.map((skill) => (
-                  <span key={skill} className="rounded-full bg-ice px-3 py-1 text-sm font-semibold text-ink">{skill}</span>
+                  <span key={skill} className="rounded-full bg-ice px-3 py-1 text-sm font-semibold text-ink dark:bg-electric/20 dark:text-slate-100">{skill}</span>
                 ))}
               </div>
             </div>
-            <div className="rounded-lg bg-white p-5 shadow-sm">
-              <h3 className="font-black">Missing Skills</h3>
+            <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
+              <h3 className="font-black dark:text-white">Missing Skills</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {ats.missing_skills.map((skill) => (
-                  <span key={skill} className="rounded-full bg-blush/10 px-3 py-1 text-sm font-semibold text-blush">{skill}</span>
+                  <span key={skill} className="rounded-full bg-blush/10 px-3 py-1 text-sm font-semibold text-blush dark:bg-blush/20 dark:text-[#f3a6c4]">{skill}</span>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-5 shadow-sm">
-            <h3 className="font-black">Format Check</h3>
-            <div className="mt-3 space-y-2 text-sm text-slate-700">
+          <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
+            <h3 className="font-black dark:text-white">Format Check</h3>
+            <div className="mt-3 space-y-2 text-sm text-slate-700 dark:text-slate-200">
               {ats.format_issues.map((issue) => <p key={issue}>{issue}</p>)}
-              {ats.format_suggestions.map((suggestion) => <p key={suggestion} className="font-semibold text-blush">{suggestion}</p>)}
+              {ats.format_suggestions.map((suggestion) => <p key={suggestion} className="font-semibold text-blush dark:text-[#f3a6c4]">{suggestion}</p>)}
             </div>
           </div>
         </div>

@@ -30,14 +30,14 @@ function GeneratedView({ title, kicker, buttonLabel, run, resultKey }) {
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.94))] p-6 shadow-[0_24px_60px_rgba(103,170,249,0.12)]"
+        className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.94))] p-6 shadow-[0_24px_60px_rgba(103,170,249,0.12)] dark:!bg-[linear-gradient(180deg,rgba(25,32,47,0.98),rgba(15,22,34,0.94))] dark:shadow-[0_24px_60px_rgba(0,0,0,0.22)]"
       >
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-[1.2rem] border border-ice/80 bg-[linear-gradient(135deg,rgba(244,250,255,0.95),rgba(234,244,255,0.95))] px-5 py-4">
+        <div className="mb-5 flex items-center justify-between gap-4 rounded-[1.2rem] border border-ice/80 bg-[linear-gradient(135deg,rgba(244,250,255,0.95),rgba(234,244,255,0.95))] px-5 py-4 dark:border-white/10 dark:!bg-[linear-gradient(135deg,rgba(31,43,61,0.95),rgba(18,29,44,0.95))]">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blush">{kicker}</p>
-            <p className="mt-1 text-sm text-slate-600">Run the existing backend workflow and render the answer in a cleaner reading view.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blush dark:text-[#f3a6c4]">{kicker}</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Run the existing backend workflow and render the answer in a cleaner reading view.</p>
           </div>
-          <div className="hidden h-11 w-11 items-center justify-center rounded-2xl bg-white text-electric shadow-sm sm:flex">
+          <div className="hidden h-11 w-11 items-center justify-center rounded-2xl bg-white text-electric shadow-sm sm:flex dark:bg-white/10">
             <Sparkles size={20} />
           </div>
         </div>
@@ -135,13 +135,13 @@ export function ChatView() {
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.94))] p-6 shadow-[0_24px_60px_rgba(103,170,249,0.12)]"
+        className="rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.94))] p-6 shadow-[0_24px_60px_rgba(103,170,249,0.12)] dark:!bg-[linear-gradient(180deg,rgba(25,32,47,0.98),rgba(15,22,34,0.94))] dark:shadow-[0_24px_60px_rgba(0,0,0,0.22)]"
       >
         <textarea
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           rows={4}
-          className="w-full rounded-[1.2rem] border border-slate-200 bg-slate-50/90 p-4 leading-7 outline-none transition focus:border-azure focus:bg-white"
+          className="w-full rounded-[1.2rem] border border-slate-200 bg-slate-50/90 p-4 leading-7 text-ink outline-none transition focus:border-azure focus:bg-white dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-white/10"
           placeholder="Ask about your resume, JD fit, missing skills, or interview preparation."
         />
         <Button onClick={ask} disabled={!query.trim() || loading} className="mt-4 rounded-2xl">
@@ -194,15 +194,15 @@ export function ColdEmailView() {
   return (
     <SectionShell title="Cold Email Sender" kicker="Recruiter outreach">
       <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
-        <div className="rounded-lg bg-white p-5 shadow-sm">
-          <input type="file" accept=".xlsx" onChange={(event) => setFile(event.target.files?.[0] || null)} className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm" />
+        <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
+          <input type="file" accept=".xlsx" onChange={(event) => setFile(event.target.files?.[0] || null)} className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-ink dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100" />
           <Button onClick={loadPreview} disabled={!file || loading === "preview"} className="mt-4">
             {loading === "preview" && <Loader2 size={16} className="animate-spin" />}
             Preview Recruiters
           </Button>
-          <input value={senderEmail} onChange={(event) => setSenderEmail(event.target.value)} placeholder="Your Gmail" className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 outline-none focus:border-azure" />
-          <input value={appPassword} onChange={(event) => setAppPassword(event.target.value)} placeholder="Gmail app password" type="password" className="mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 outline-none focus:border-azure" />
-          <label className="mt-3 block text-sm font-semibold text-slate-600">Delay: {delay}s</label>
+          <input value={senderEmail} onChange={(event) => setSenderEmail(event.target.value)} placeholder="Your Gmail" className="mt-5 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-ink outline-none focus:border-azure dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100 dark:placeholder:text-slate-500" />
+          <input value={appPassword} onChange={(event) => setAppPassword(event.target.value)} placeholder="Gmail app password" type="password" className="mt-3 w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-ink outline-none focus:border-azure dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100 dark:placeholder:text-slate-500" />
+          <label className="mt-3 block text-sm font-semibold text-slate-600 dark:text-slate-300">Delay: {delay}s</label>
           <input type="range" min="10" max="60" value={delay} onChange={(event) => setDelay(Number(event.target.value))} className="w-full accent-blush" />
           <Button onClick={sendEmails} disabled={!preview || !senderEmail || !appPassword || loading === "send"} className="mt-4">
             {loading === "send" && <Loader2 size={16} className="animate-spin" />}
@@ -212,8 +212,8 @@ export function ColdEmailView() {
         </div>
         <div className="space-y-4">
           {preview && (
-            <div className="rounded-lg bg-white p-5 shadow-sm">
-              <h3 className="font-black">Found {preview.count} recruiters</h3>
+            <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
+              <h3 className="font-black dark:text-white">Found {preview.count} recruiters</h3>
               <ResultBox className="mt-3 max-h-72 overflow-auto">{preview.preview}</ResultBox>
             </div>
           )}

@@ -4,7 +4,7 @@ function formatInline(text) {
   return segments.map((segment, index) => {
     if (segment.startsWith("**") && segment.endsWith("**")) {
       return (
-        <strong key={`${segment}-${index}`} className="font-black text-ink">
+        <strong key={`${segment}-${index}`} className="font-black text-ink dark:text-white">
           {segment.slice(2, -2)}
         </strong>
       );
@@ -32,7 +32,7 @@ function renderStructuredContent(content) {
             key={`${item}-${index}`}
             className={isOrdered ? "list-decimal marker:font-black marker:text-blush" : ""}
           >
-            <span className="text-slate-700">{formatInline(item)}</span>
+            <span className="text-slate-700 dark:text-slate-200">{formatInline(item)}</span>
           </li>
         ))}
       </ListTag>
@@ -53,7 +53,7 @@ function renderStructuredContent(content) {
     if (headingMatch) {
       flushList();
       blocks.push(
-        <h3 key={`h3-${index}`} className="pt-1 text-lg font-black text-ink">
+        <h3 key={`h3-${index}`} className="pt-1 text-lg font-black text-ink dark:text-white">
           {formatInline(headingMatch[1])}
         </h3>
       );
@@ -82,7 +82,7 @@ function renderStructuredContent(content) {
 
     flushList();
     blocks.push(
-      <p key={`p-${index}`} className="text-[15px] leading-8 text-slate-700">
+      <p key={`p-${index}`} className="text-[15px] leading-8 text-slate-700 dark:text-slate-200">
         {formatInline(trimmed)}
       </p>
     );
@@ -96,7 +96,7 @@ export function ResultBox({ children, className = "" }) {
   const content = typeof children === "string" ? children : String(children);
 
   return (
-    <div className={`rounded-[1.25rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] p-6 shadow-[0_22px_50px_rgba(103,170,249,0.12)] ${className}`}>
+    <div className={`rounded-[1.25rem] border border-white/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.98),rgba(244,249,255,0.96))] p-6 shadow-[0_22px_50px_rgba(103,170,249,0.12)] dark:border-white/10 dark:!bg-[linear-gradient(145deg,rgba(26,32,46,0.98),rgba(16,22,35,0.96))] dark:shadow-[0_22px_50px_rgba(0,0,0,0.22)] ${className}`}>
       <div className="space-y-4">{renderStructuredContent(content)}</div>
     </div>
   );
