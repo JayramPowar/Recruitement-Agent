@@ -1,18 +1,19 @@
-import pandas as pd
+import csv
 import smtplib
 import ssl
 import time
 import os
 import re
+from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="D:/GenAI/AI-recruitement Copilot/AI-Recruitment-Copilot/.env")
+load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
 
 def extract_email(text):
-    if pd.isna(text):
+    if text is None:
         return None
     text = str(text)
     if "Apply via link" in text or "LinkedIn DM" in text:
@@ -22,14 +23,30 @@ def extract_email(text):
         return None
     return emails[0].strip().lower()
 
-def load_recruiters(excel_file):
-    df = pd.read_excel(excel_file)
-    df["clean_email"] = df["Email ID"].apply(extract_email)
-    df = df[df["clean_email"].notna()]
-    df["Email ID"] = df["clean_email"]
-    df.drop(columns=["clean_email"], inplace=True)
-    df = df.drop_duplicates(subset=["Email ID"])
-    return df
+def load_recruiters(csv_file):
+    required_columns = {"Company Name", "HR / Contact Person", "Email ID"}
+    recruiters = []
+    seen_emails = set()
+
+    with open(csv_file, newline="", encoding="utf-8-sig") as file:
+        reader = csv.DictReader(file)
+        missing_columns = required_columns - set(reader.fieldnames or [])
+        if missing_columns:
+            missing = ", ".join(sorted(missing_columns))
+            raise ValueError(f"Recruiter CSV is missing required column(s): {missing}")
+
+        for row in reader:
+            email = extract_email(row.get("Email ID"))
+            if not email or email in seen_emails:
+                continue
+            seen_emails.add(email)
+            recruiters.append({
+                "Company Name": (row.get("Company Name") or "").strip(),
+                "HR / Contact Person": (row.get("HR / Contact Person") or "").strip(),
+                "Email ID": email,
+            })
+
+    return recruiters
 
 def generate_email_body(hr_name, company_name, resume_skills=[]):
     skills_str = ", ".join(resume_skills) if resume_skills else "Python, Machine Learning, Deep Learning, NLP, Data Analysis"
@@ -62,15 +79,15 @@ GitHub: https://github.com/NehaBharti16
 """
     return body
 
-def send_cold_emails(excel_path, resume_path, sender_email, app_password, resume_skills=[], delay=30):
-    df = load_recruiters(excel_path)
+def send_cold_emails(csv_path, resume_path, sender_email, app_password, resume_skills=[], delay=30):
+    recruiters = load_recruiters(csv_path)
     results = []
     context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, app_password)
 
-        for _, row in df.iterrows():
+        for row in recruiters:
             hr_name = str(row["HR / Contact Person"]).strip()
             company_name = str(row["Company Name"]).strip()
             receiver_email = str(row["Email ID"]).strip()
@@ -105,4 +122,4 @@ def send_cold_emails(excel_path, resume_path, sender_email, app_password, resume
                     "status": f"❌ Failed: {str(e)}"
                 })
 
-    return results, len(df)
+    return results, len(recruiters)

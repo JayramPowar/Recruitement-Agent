@@ -1,8 +1,9 @@
 from groq import Groq
 import os
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv(dotenv_path="D:/GenAI/AI-recruitement Copilot/AI-Recruitment-Copilot/.env")
+load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def router_agent(user_query, resume_text="", jd_text="", missing_skills=[]):

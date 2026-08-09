@@ -12,6 +12,8 @@ import {
   PenLine,
   UploadCloud,
 } from "lucide-react";
+import logoDark from "../assets/resumelens-mark-dark.png";
+import logoLight from "../assets/resumelens-mark-light.png";
 import { useAppState } from "../context/AppState.jsx";
 
 export const sections = [
@@ -34,16 +36,29 @@ function StatusPill({ label, done }) {
   );
 }
 
-export function Sidebar({ open, onClose }) {
+export function Sidebar({ open, onClose, darkMode }) {
   const { activeSection, setActiveSection, resume, jd, isReady } = useAppState();
+  const logoSrc = darkMode ? logoDark : logoLight;
 
   return (
     <motion.aside
       initial={false}
       animate={{ x: open ? 0 : "-100%" }}
       transition={{ duration: 0.24, ease: "easeOut" }}
-      className="fixed left-0 top-0 z-30 flex h-screen w-72 flex-col border-r border-azure/20 bg-ice/85 p-5 pt-24 shadow-[18px_0_55px_rgba(16,32,51,0.12)] backdrop-blur-xl dark:border-white/10 dark:!bg-[linear-gradient(180deg,rgba(13,18,30,0.98),rgba(9,13,23,0.96))] dark:shadow-[18px_0_55px_rgba(0,0,0,0.35)]"
+      className="fixed left-0 top-0 z-30 flex h-screen w-72 flex-col border-r border-azure/20 bg-ice/85 p-5 pt-20 shadow-[18px_0_55px_rgba(16,32,51,0.12)] backdrop-blur-xl dark:border-white/10 dark:!bg-[linear-gradient(180deg,rgba(13,18,30,0.98),rgba(9,13,23,0.96))] dark:shadow-[18px_0_55px_rgba(0,0,0,0.35)]"
     >
+      <div className="mb-6 rounded-2xl border border-white/70 bg-white/80 p-3 shadow-sm dark:border-white/10 dark:bg-[#081121]/80">
+        <div className="flex items-center gap-3">
+          <img src={logoSrc} alt="" className="h-16 w-16 shrink-0 rounded-xl object-cover" />
+          <div className="min-w-0">
+            <div className="text-2xl font-black leading-none text-ink dark:text-white">
+              Resume<span className="text-blush dark:text-[#f36aa8]">Lens</span>
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">See Your Best. Get Hired.</p>
+          </div>
+        </div>
+      </div>
+
       <div className="mb-5 flex items-center justify-between">
         <div>
           <div className="text-xs font-bold uppercase tracking-[0.2em] text-blush dark:text-[#f3a6c4]">Workspace</div>

@@ -1,13 +1,26 @@
-from sentence_transformers import SentenceTransformer, util
+import math
 import re
+from collections import Counter
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+TOKEN_PATTERN = re.compile(r"[a-zA-Z][a-zA-Z0-9+#.-]{1,}")
+
+def _token_counts(text):
+    return Counter(token.lower() for token in TOKEN_PATTERN.findall(text or ""))
 
 def semantic_similarity(resume_text, jd_text):
-    resume_embedding = model.encode(resume_text, convert_to_tensor=True)
-    jd_embedding = model.encode(jd_text, convert_to_tensor=True)
-    similarity = util.cos_sim(resume_embedding, jd_embedding)
-    return round(float(similarity) * 100, 2)
+    resume_counts = _token_counts(resume_text)
+    jd_counts = _token_counts(jd_text)
+    if not resume_counts or not jd_counts:
+        return 0
+
+    common_tokens = set(resume_counts).intersection(jd_counts)
+    dot_product = sum(resume_counts[token] * jd_counts[token] for token in common_tokens)
+    resume_magnitude = math.sqrt(sum(count * count for count in resume_counts.values()))
+    jd_magnitude = math.sqrt(sum(count * count for count in jd_counts.values()))
+    if not resume_magnitude or not jd_magnitude:
+        return 0
+
+    return round((dot_product / (resume_magnitude * jd_magnitude)) * 100, 2)
 
 def extract_years_required(jd_text):
     patterns = [

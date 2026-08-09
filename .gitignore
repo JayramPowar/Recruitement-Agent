@@ -1,10 +1,28 @@
-.env
-__pycache__/
-*.pyc
-*.pyo
+# Shared
 .DS_Store
-data/uploads/
-*.pdf
+
+# Backend
+.env
+backend/.env
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/**/*.pyo
+backend/data/uploads/
+backend/*.pdf
 venv/
 .venv/
-node_modules/
+backend/venv/
+backend/.venv/
+
+# Frontend
+frontend/.env
+frontend/.env.*
+frontend/node_modules/
+frontend/dist/
+frontend/vite-dev*.log
+frontend/vite-dev*.err
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*

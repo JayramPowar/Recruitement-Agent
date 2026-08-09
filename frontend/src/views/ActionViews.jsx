@@ -7,19 +7,43 @@ import { ResultBox } from "../components/ResultBox.jsx";
 import { SectionShell } from "../components/SectionShell.jsx";
 import { useAppState } from "../context/AppState.jsx";
 
-function GeneratedView({ title, kicker, buttonLabel, run, resultKey }) {
+const CHAT_QUERY_LIMIT = 200;
+
+function normalizeGeneratedText(value) {
+  if (typeof value === "string") return value.trim();
+  if (Array.isArray(value)) return value.map((item) => normalizeGeneratedText(item)).filter(Boolean).join("\n");
+  if (value == null) return "";
+  if (typeof value === "object") {
+    if (typeof value.answer === "string") return value.answer.trim();
+    if (typeof value.content === "string") return value.content.trim();
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch {
+      return String(value);
+    }
+  }
+  return String(value);
+}
+
+function GeneratedView({ title, kicker, buttonLabel, run, resultKey, disabled, helpText, resultVariant = "default" }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
   async function handleRun() {
+    if (disabled) return;
     setError("");
     setLoading(true);
     try {
       const data = await run();
-      setResult(data[resultKey]);
+      const nextResult = normalizeGeneratedText(data?.[resultKey]);
+      if (!nextResult) {
+        throw new Error("The server returned an empty response.");
+      }
+      setResult(nextResult);
     } catch (err) {
       setError(err.message);
+      setResult("");
     } finally {
       setLoading(false);
     }
@@ -35,18 +59,19 @@ function GeneratedView({ title, kicker, buttonLabel, run, resultKey }) {
         <div className="mb-5 flex items-center justify-between gap-4 rounded-[1.2rem] border border-ice/80 bg-[linear-gradient(135deg,rgba(244,250,255,0.95),rgba(234,244,255,0.95))] px-5 py-4 dark:border-white/10 dark:!bg-[linear-gradient(135deg,rgba(31,43,61,0.95),rgba(18,29,44,0.95))]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-blush dark:text-[#f3a6c4]">{kicker}</p>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Run the existing backend workflow and render the answer in a cleaner reading view.</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">See how your resume scores and get tips to make it stand out.</p>
           </div>
           <div className="hidden h-11 w-11 items-center justify-center rounded-2xl bg-white text-electric shadow-sm sm:flex dark:bg-white/10">
             <Sparkles size={20} />
           </div>
         </div>
-        <Button onClick={handleRun} disabled={loading} className="rounded-2xl">
+        <Button onClick={handleRun} disabled={loading || disabled} className="rounded-2xl">
           {loading && <Loader2 size={16} className="animate-spin" />}
           {buttonLabel}
         </Button>
+        {helpText && <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{helpText}</p>}
         {error && <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
-        {result && <ResultBox className="mt-4">{result}</ResultBox>}
+        {result && <ResultBox className="mt-4" variant={resultVariant}>{result}</ResultBox>}
       </motion.div>
     </SectionShell>
   );
@@ -67,6 +92,7 @@ export function ResumeAnalysisView() {
 
 export function CoverLetterView() {
   const { resume, jd } = useAppState();
+  const hasContent = resume.text.trim() && jd.text.trim();
   return (
     <GeneratedView
       title="Cover Letter Generator"
@@ -74,12 +100,16 @@ export function CoverLetterView() {
       buttonLabel="Generate Cover Letter"
       run={() => api.coverLetter(resume.text, jd.text)}
       resultKey="cover_letter"
+      disabled={!hasContent}
+      helpText={!hasContent ? "Upload both a resume and job description before generating a cover letter." : undefined}
+      resultVariant="cover-letter"
     />
   );
 }
 
 export function InterviewView() {
   const { resume, jd } = useAppState();
+  const hasContent = resume.text.trim() && jd.text.trim();
   return (
     <GeneratedView
       title="Interview Questions"
@@ -87,6 +117,8 @@ export function InterviewView() {
       buttonLabel="Generate Questions"
       run={() => api.interviewQuestions(resume.text, jd.text)}
       resultKey="questions"
+      disabled={!hasContent}
+      helpText={!hasContent ? "Upload both a resume and job description before generating interview questions." : undefined}
     />
   );
 }
@@ -94,6 +126,7 @@ export function InterviewView() {
 export function RoadmapView() {
   const { ats } = useAppState();
   const missingSkills = ats?.missing_skills || [];
+  const hasSkills = Array.isArray(missingSkills) && missingSkills.length > 0;
   return (
     <GeneratedView
       title="Learning Roadmap"
@@ -101,12 +134,16 @@ export function RoadmapView() {
       buttonLabel="Generate Roadmap"
       run={() => api.roadmap(missingSkills)}
       resultKey="roadmap"
+      disabled={!hasSkills}
+      helpText={!hasSkills ? "Run ATS analysis first so the roadmap can use your missing skills." : undefined}
+      resultVariant="roadmap"
     />
   );
 }
 
 export function ChatView() {
   const { resume, jd, ats } = useAppState();
+  const hasContext = resume.text.trim() && jd.text.trim();
   const [query, setQuery] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
@@ -122,9 +159,14 @@ export function ChatView() {
         jdText: jd.text,
         missingSkills: ats?.missing_skills || [],
       });
-      setAnswer(data.answer);
+      const nextAnswer = normalizeGeneratedText(data?.answer);
+      if (!nextAnswer) {
+        throw new Error("The server returned an empty response.");
+      }
+      setAnswer(nextAnswer);
     } catch (err) {
       setError(err.message);
+      setAnswer("");
     } finally {
       setLoading(false);
     }
@@ -139,15 +181,22 @@ export function ChatView() {
       >
         <textarea
           value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => setQuery(event.target.value.slice(0, CHAT_QUERY_LIMIT))}
+          maxLength={CHAT_QUERY_LIMIT}
           rows={4}
           className="w-full rounded-[1.2rem] border border-slate-200 bg-slate-50/90 p-4 leading-7 text-ink outline-none transition focus:border-azure focus:bg-white dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-white/10"
           placeholder="Ask about your resume, JD fit, missing skills, or interview preparation."
         />
-        <Button onClick={ask} disabled={!query.trim() || loading} className="mt-4 rounded-2xl">
-          {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-          Ask
-        </Button>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <Button onClick={ask} disabled={!query.trim() || !hasContext || loading} className="rounded-2xl">
+            {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+            Ask
+          </Button>
+          <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+            {query.length}/{CHAT_QUERY_LIMIT}
+          </span>
+        </div>
+        {!hasContext && <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Upload both a resume and job description before using the chatbot.</p>}
         {error && <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
         {answer && <ResultBox className="mt-4">{answer}</ResultBox>}
       </motion.div>
@@ -195,7 +244,7 @@ export function ColdEmailView() {
     <SectionShell title="Cold Email Sender" kicker="Recruiter outreach">
       <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
         <div className="rounded-lg bg-white p-5 shadow-sm dark:bg-[#151c2b]">
-          <input type="file" accept=".xlsx" onChange={(event) => setFile(event.target.files?.[0] || null)} className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-ink dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100" />
+          <input type="file" accept=".csv,text/csv" onChange={(event) => setFile(event.target.files?.[0] || null)} className="w-full rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-ink dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100" />
           <Button onClick={loadPreview} disabled={!file || loading === "preview"} className="mt-4">
             {loading === "preview" && <Loader2 size={16} className="animate-spin" />}
             Preview Recruiters
