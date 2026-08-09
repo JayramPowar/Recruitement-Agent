@@ -20,7 +20,8 @@ VITE_API_BASE_URL=http://localhost:8001
 From the project root, run the backend API:
 
 ```bash
-uvicorn api.server:app --reload --port 8001
+cd backend
+python -m uvicorn api.server:app --reload --port 8001
 ```
 
 In another terminal:

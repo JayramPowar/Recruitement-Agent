@@ -59,7 +59,7 @@ export const api = {
   previewRecruiters(file, resumeSkills) {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("resume_skills", resumeSkills.join(","));
+    formData.append("resume_skills", Array.isArray(resumeSkills) ? resumeSkills.join(",") : "");
     return request("/api/cold-email/preview", { method: "POST", body: formData });
   },
   sendColdEmails(payload) {

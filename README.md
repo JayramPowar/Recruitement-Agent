@@ -22,43 +22,27 @@ AI Recruitment Copilot is an AI-powered career assistant that compares resumes w
 | Frontend | React, Vite, Tailwind CSS, Framer Motion, Lucide React |
 | Backend API | FastAPI, Uvicorn |
 | AI / LLM | Groq API, LLaMA 3.3 70B |
-| Embeddings | Sentence Transformers (`all-MiniLM-L6-v2`) |
-| Vector Store | Qdrant Client (`:memory:` mode in current code) |
+| Embeddings | Hugging Face hosted `sentence-transformers/all-MiniLM-L6-v2` |
+| Retrieval | In-memory vector search over hosted Hugging Face embeddings |
 | Resume Parsing | pdfplumber |
-| Data / Email | pandas, openpyxl, smtplib |
+| Data / Email | CSV, smtplib |
 | Config | python-dotenv |
 
 ## Project Structure
 
 ```text
 AI-Recruitment-Copilot/
-|-- api/
-|   |-- server.py                # FastAPI adapter for frontend requests
-|
-|-- agents/
-|   |-- ats_agent.py
-|   |-- career_agent.py
-|   |-- interview_agent.py
-|   |-- resume_agent.py
-|   |-- router_agent.py
-|
-|-- ats/
-|   |-- ats_score.py            # ATS scoring logic
-|   |-- skill_extractor.py      # Resume/JD text extraction and skill extraction
-|
-|-- cold_email/
-|   |-- sender.py               # Recruiter parsing, preview, and email sending
-|
-|-- cover_letter/
-|   |-- generator.py
-|
-|-- rag/
-|   |-- embeddings.py
-|   |-- qdrant_store.py         # In-memory Qdrant store
-|   |-- retriever.py
-|
-|-- roadmap/
-|   |-- roadmap_generator.py
+|-- backend/
+|   |-- api/
+|   |   `-- server.py           # FastAPI adapter for frontend requests
+|   |-- agents/
+|   |-- ats/
+|   |-- cold_email/
+|   |-- cover_letter/
+|   |-- rag/
+|   |-- roadmap/
+|   |-- data/
+|   `-- requirements.txt
 |
 |-- frontend/
 |   |-- src/
@@ -70,7 +54,6 @@ AI-Recruitment-Copilot/
 |   |-- tailwind.config.js
 |   `-- vite.config.js
 |
-|-- requirements.txt
 `-- README.md
 ```
 
@@ -88,14 +71,14 @@ cd AI-Recruitment-Copilot
 Windows PowerShell:
 
 ```bash
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+python -m venv backend\.venv
+.\backend\.venv\Scripts\Activate.ps1
 ```
 
 ### 3. Install backend dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### 4. Install frontend dependencies
@@ -108,18 +91,18 @@ cd ..
 
 ### 5. Configure environment variables
 
-Create a root `.env` file with:
+Create `backend/.env` with:
 
 ```env
 GROQ_API_KEY=your-groq-api-key
-QDRANT_HOST=https://your-qdrant-cluster-url
-QDRANT_PORT=6333
+HF_TOKEN=your-hugging-face-token
 ```
 
 Notes:
 
-- The current code uses in-memory Qdrant in [qdrant_store.py](<D:\GenAI\AI-recruitement Copilot\AI-Recruitment-Copilot\rag\qdrant_store.py>), so `QDRANT_HOST` and `QDRANT_API` are not actively used yet.
-- `GROQ_API_KEY` is required for skill extraction, resume review, cover letter generation, roadmap generation, chatbot routing, and interview questions.
+- RAG uses an in-memory vector store in [qdrant_store.py](backend/rag/qdrant_store.py), so vectors are rebuilt from the current resume, job description, and ATS context during chat requests.
+- `HF_TOKEN` is required for hosted RAG embeddings. You can set `HF_EMBEDDING_MODEL` to use a different Hugging Face feature-extraction model.
+- `GROQ_API_KEY` is required for skill extraction, resume review, cover letter generation, roadmap generation, chatbot answers, and interview questions.
 
 ### 6. Optional frontend API override
 
@@ -136,6 +119,7 @@ VITE_API_BASE_URL=http://localhost:8001
 Use `8001` if `8000` is blocked on your machine.
 
 ```bash
+cd backend
 python -m uvicorn api.server:app --reload --port 8001
 ```
 
@@ -163,7 +147,7 @@ http://localhost:5173
 
 ## How ATS Score Is Calculated
 
-The ATS scoring logic lives in [ats_score.py](<D:\GenAI\AI-recruitement Copilot\AI-Recruitment-Copilot\ats\ats_score.py>).
+The ATS scoring logic lives in [ats_score.py](backend/ats/ats_score.py).
 
 The final ATS score is computed as:
 
@@ -181,7 +165,7 @@ Final ATS Score =
 | Component | Weight | How it works |
 | --- | --- | --- |
 | Keyword Score | 30% | Compares extracted resume skills against extracted JD skills. |
-| Semantic Score | 30% | Uses `all-MiniLM-L6-v2` embeddings and cosine similarity between resume and JD text. |
+| Semantic Score | 30% | Uses lightweight token cosine similarity between resume and JD text. |
 | Experience Score | 20% | Detects years of experience in JD and resume using regex patterns and scores the match. |
 | Education Score | 10% | Matches degree levels such as Bachelor, M.Tech, MBA, MSc, PhD, Diploma, and related terms. |
 | Format Score | 10% | Checks resume length, section headings, contact details, and overall ATS readability. |
@@ -199,7 +183,6 @@ The backend currently applies these checks:
 
 - Resume upload expects a PDF file.
 - Job description can be pasted directly or uploaded as `.txt`, `.md`, or `.pdf`.
-- Cold email sender expects an `.xlsx` file with `Company Name`, `HR / Contact Person`, and `Email ID` columns.
+- Cold email sender expects a `.csv` file with `Company Name`, `HR / Contact Person`, and `Email ID` columns.
 - Gmail sending requires a Gmail app password, not the normal account password.
-- Qdrant is currently used in in-memory mode, so vectors are not persisted after restart.
-
+- RAG vectors are stored in memory and rebuilt during chat requests, so they are not persisted after restart.

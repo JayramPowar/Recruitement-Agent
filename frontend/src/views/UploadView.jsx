@@ -90,6 +90,27 @@ export function UploadView() {
 
   return (
     <SectionShell title="Upload Resume + Job Description" kicker="Start here">
+      {ready && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-7 flex items-center justify-between rounded-[1.5rem] border border-electric/20 bg-[linear-gradient(135deg,rgba(240,250,255,0.98),rgba(226,242,255,0.96))] p-6 text-ink shadow-[0_24px_50px_rgba(46,192,249,0.12)] dark:border-white/10 dark:!bg-[linear-gradient(135deg,rgba(28,44,61,0.98),rgba(16,29,43,0.96))] dark:text-white"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-electric shadow-sm dark:bg-white/10">
+              <Sparkles size={24} />
+            </div>
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#328cc2] dark:text-electric">Documents ready</p>
+              <p className="mt-1 text-xl font-black">Other features are unlocked.</p>
+            </div>
+          </div>
+          <Button onClick={() => setActiveSection("dashboard")} className="rounded-2xl bg-gradient-to-r from-electric to-azure text-white shadow-[0_16px_30px_rgba(46,192,249,0.24)]">
+            Open ATS Dashboard
+          </Button>
+        </motion.div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <UploadPanel icon={FileUp} title="Resume PDF" subtitle="Upload the latest version of your resume for parsing and analysis.">
           <UploadAction
@@ -125,7 +146,7 @@ export function UploadView() {
           <textarea
             value={jdText}
             onChange={(event) => setJDText(event.target.value)}
-            rows={8}
+            rows={6}
             placeholder="Paste the JD here if you do not have a file."
             className="mt-4 w-full resize-y rounded-[1.1rem] border border-slate-200 bg-slate-50/90 p-4 text-sm leading-7 text-ink outline-none transition focus:border-azure focus:bg-white dark:border-white/10 dark:bg-white/[0.08] dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-white/10"
           />
@@ -146,27 +167,6 @@ export function UploadView() {
       </div>
 
       {error && <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</div>}
-
-      {ready && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-7 flex items-center justify-between rounded-[1.5rem] border border-electric/20 bg-[linear-gradient(135deg,rgba(240,250,255,0.98),rgba(226,242,255,0.96))] p-6 text-ink shadow-[0_24px_50px_rgba(46,192,249,0.12)] dark:border-white/10 dark:!bg-[linear-gradient(135deg,rgba(28,44,61,0.98),rgba(16,29,43,0.96))] dark:text-white"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-electric shadow-sm dark:bg-white/10">
-              <Sparkles size={24} />
-            </div>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#328cc2] dark:text-electric">Documents ready</p>
-              <p className="mt-1 text-xl font-black">Sidebar features are unlocked.</p>
-            </div>
-          </div>
-          <Button onClick={() => setActiveSection("dashboard")} className="rounded-2xl bg-gradient-to-r from-electric to-azure text-white shadow-[0_16px_30px_rgba(46,192,249,0.24)]">
-            Open ATS Dashboard
-          </Button>
-        </motion.div>
-      )}
     </SectionShell>
   );
 }
