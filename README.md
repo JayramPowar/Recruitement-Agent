@@ -21,7 +21,7 @@ AI Recruitment Copilot is an AI-powered career assistant that compares resumes w
 | --- | --- |
 | Frontend | React, Vite, Tailwind CSS, Framer Motion, Lucide React |
 | Backend API | FastAPI, Uvicorn |
-| AI / LLM | Groq API, LLaMA 3.3 70B |
+| AI / LLM | Groq API, GPT OSS 120B |
 | Embeddings | Hugging Face hosted `sentence-transformers/all-MiniLM-L6-v2` |
 | Retrieval | In-memory vector search over hosted Hugging Face embeddings |
 | Resume Parsing | pdfplumber |
