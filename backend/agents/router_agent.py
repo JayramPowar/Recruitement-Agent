@@ -11,7 +11,7 @@ def router_agent(user_query, resume_text="", jd_text="", missing_skills=[]):
 Return ONLY one of these words: resume_agent, ats_agent, interview_agent, career_agent
 User Query: {user_query}"""
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}]
     )
     agent_name = response.choices[0].message.content.strip().lower()

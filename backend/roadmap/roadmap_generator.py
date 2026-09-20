@@ -68,7 +68,7 @@ Project/checkpoint: ...
 - Output ONLY the roadmap."""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.6,
     )
@@ -111,7 +111,7 @@ Generate exactly 10 questions:
 - Output ONLY the numbered list. No preamble, no explanation, no "Here are 10 questions:"."""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )
