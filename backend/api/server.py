@@ -109,6 +109,11 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "AI Recruitment Copilot API"}
+
+
 @app.post("/api/upload/resume")
 def upload_resume(file: UploadFile = File(...)):
     if not file.filename or not file.filename.lower().endswith(".pdf"):
