@@ -1,6 +1,8 @@
-# AI Recruitment Copilot
+# ResumeLens - AI Recruitment Copilot
 
-AI Recruitment Copilot is an AI-powered career assistant that compares resumes with job descriptions, calculates ATS match scores, reviews resumes, generates cover letters, creates interview questions, builds learning roadmaps, supports recruiter outreach, and answers career queries through a RAG-based chatbot.
+#### Click here for live demo - [https://recruitement-agent.vercel.app/](https://recruitement-agent.vercel.app/)
+
+ResumeLens is an AI-powered career assistant that compares resumes with job descriptions, calculates ATS match scores, reviews resumes, generates cover letters, creates interview questions, builds learning roadmaps, supports recruiter outreach, and answers career queries through a RAG-based chatbot.
 
 ## Features
 
