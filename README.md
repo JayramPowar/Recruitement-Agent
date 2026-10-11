@@ -167,7 +167,7 @@ Final ATS Score =
 | Component | Weight | How it works |
 | --- | --- | --- |
 | Keyword Score | 30% | Compares extracted resume skills against extracted JD skills. |
-| Semantic Score | 30% | Uses lightweight token cosine similarity between resume and JD text. |
+| Semantic Score | 30% | Splits the JD into requirement-sized units, splits the resume into overlapping chunks, embeds both with the existing MiniLM embedding pipeline, and averages each JD requirement's best resume chunk match. Also expands common tech aliases like `ML` -> `machine learning`; if embeddings fail, it falls back to stopword-filtered lexical cosine. |
 | Experience Score | 20% | Detects years of experience in JD and resume using regex patterns and scores the match. |
 | Education Score | 10% | Matches degree levels such as Bachelor, M.Tech, MBA, MSc, PhD, Diploma, and related terms. |
 | Format Score | 10% | Checks resume length, section headings, contact details, and overall ATS readability. |
